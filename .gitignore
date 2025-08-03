@@ -1,0 +1,36 @@
+# Environment files (keep actual values secret)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Build artifacts
+target/
+build/
+dist/
+node_modules/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Backup folders with hardcoded values (keep local only)"
+*/backup/
+**/backup/
+backup/

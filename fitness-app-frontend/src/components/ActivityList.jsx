@@ -1,6 +1,6 @@
 import { Card, CardContent, Grid, Typography, Box, Container, Chip, Avatar, Skeleton } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { getActivities } from '../services/api';
 import { 
   DirectionsRun, 
@@ -48,6 +48,7 @@ const ActivityList = () => {
     const fetchActivity = async () => {
         try{
            const response = await getActivities();
+           console.log('Activities fetched:', response.data);
            setActivities(response.data);
            setLoading(false);
         }catch(error){
@@ -220,7 +221,10 @@ const ActivityList = () => {
                                     },
                                 },
                             }}
-                            onClick={() => navigate(`/activities/${activity.id}`)}
+                            onClick={() => {
+                                console.log('Navigating to activity:', activity.id, activity);
+                                navigate(`/activities/${activity.id}`);
+                            }}
                         >
                             {/* Gradient Header */}
                             <Box 

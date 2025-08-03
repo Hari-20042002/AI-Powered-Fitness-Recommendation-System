@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -27,8 +27,11 @@
 		<url/>
 	</scm>
 	<properties>
-		<java.version>24</java.version>
+		<!-- Set to Java 21 for better compatibility and base image availability -->
+		<java.version>21</java.version>
 		<spring-cloud.version>2025.0.0</spring-cloud.version>
+		<!-- Added lombok.version property -->
+		<lombok.version>1.18.32</lombok.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -86,11 +89,13 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.12.1</version>
 				<configuration>
 					<annotationProcessorPaths>
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
+							<version>${lombok.version}</version>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
@@ -106,6 +111,46 @@
 						</exclude>
 					</excludes>
 				</configuration>
+			</plugin>
+
+			<!-- ======================================================= -->
+			<!--      JIB MAVEN PLUGIN FOR CONTAINERIZING                -->
+			<!-- ======================================================= -->
+			<plugin>
+				<groupId>com.google.cloud.tools</groupId>
+				<artifactId>jib-maven-plugin</artifactId>
+				<version>3.4.6</version>
+				<configuration>
+					<from>
+						<image>eclipse-temurin:21-jre-jammy</image>
+					</from>
+					<to>
+						<!-- This will automatically use the groupId and artifactId -->
+						<image>${project.groupId}/${project.artifactId}:${project.version}</image>
+						<tags>
+							<tag>latest</tag>
+						</tags>
+					</to>
+					<container>
+						<!--
+                            IMPORTANT: Update this to your actual main class for the activity service.
+                            This is an assumed value based on your groupId and artifactId.
+                        -->
+						<mainClass>com.fitness.activityservice.ActivityserviceApplication</mainClass>
+						<ports>
+							<!-- Default web application port -->
+							<port>8080</port>
+						</ports>
+					</container>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>dockerBuild</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

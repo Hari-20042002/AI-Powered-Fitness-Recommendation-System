@@ -1,29 +1,26 @@
 server:
-  port: 8081
+  port: ${USER_SERVICE_PORT:8081}
 
 spring:
+  application:
+    name: user-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/fitness_user_db
-    username: fitness_user
-    password: fitness_8279
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:fitness_user_db}
+    username: ${POSTGRES_USERNAME:fitness_user}
+    password: ${POSTGRES_PASSWORD:your_password}
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true # Make sure this is true for debugging
+    show-sql: ${SHOW_SQL:false}
     properties:
       hibernate:
-        format_sql: true # Make sure this is true for debugging
+        format_sql: ${FORMAT_SQL:false}
     open-in-view: false
 
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
-
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
   instance:
     prefer-ip-address: true
-    hostname: localhost
-
-
-
-
+    hostname: ${EUREKA_HOSTNAME:localhost}

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -27,8 +27,15 @@
 		<url/>
 	</scm>
 	<properties>
-		<java.version>24</java.version>
+		<!--
+          IMPORTANT: You mentioned Java 24, but your pom specifies 21.
+          Jib will use the Java version specified here to select a base image.
+          Ensure this matches your intended JDK version.
+        -->
+		<java.version>21</java.version>
 		<spring-cloud.version>2025.0.0</spring-cloud.version>
+		<!-- Added lombok.version property -->
+		<lombok.version>1.18.32</lombok.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -92,10 +99,13 @@
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
+							<!-- This is required since lombok is optional -->
+							<version>${lombok.version}</version>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
+
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -108,6 +118,58 @@
 					</excludes>
 				</configuration>
 			</plugin>
+
+			<!-- ======================================================= -->
+			<!--      JIB MAVEN PLUGIN FOR CONTAINERIZING                -->
+			<!-- ======================================================= -->
+			<plugin>
+				<groupId>com.google.cloud.tools</groupId>
+				<artifactId>jib-maven-plugin</artifactId>
+				<!-- Updated to the latest version as suggested in the build log -->
+				<version>3.4.6</version>
+				<configuration>
+					<from>
+						<!--
+                            Base Image: Jib automatically selects a base image matching your Java version.
+                            Using Eclipse Temurin is a solid choice. For Java 21, it uses eclipse-temurin:21-jre.
+                            You can override it here if needed. e.g., eclipse-temurin:21-jre-jammy
+                        -->
+						<image>eclipse-temurin:21-jre-jammy</image>
+					</from>
+					<to>
+						<!--
+                            Target Image: Replace with your Docker Hub username or private registry.
+                            Example: your-docker-repo/userservice
+                        -->
+						<image>fitness-app/${project.artifactId}:${project.version}</image>
+						<tags>
+							<tag>latest</tag>
+						</tags>
+					</to>
+					<container>
+						<!-- Set the main class for the entrypoint -->
+						<mainClass>com.fitness.userservice.UserserviceApplication</mainClass>
+						<!-- JVM flags can be configured here -->
+						<jvmFlags>
+							<jvmFlag>-Xms512m</jvmFlag>
+							<jvmFlag>-Xmx1024m</jvmFlag>
+						</jvmFlags>
+						<!-- Ports to expose from the container -->
+						<ports>
+							<port>8080</port>
+						</ports>
+					</container>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>build</goal> <!-- or "dockerBuild" to build to a local Docker daemon -->
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
 		</plugins>
 	</build>
 
